@@ -1,0 +1,88 @@
+<style>
+  * {
+    font-family: Gilroy;
+  }
+  .results {
+    max-height: 300px;
+    width: 200px;
+    overflow: auto;
+  }
+  .shower {
+    width: 45%;
+    display: flex;
+    align-items: center;
+  }
+  .img {
+    height: 40px;
+    width: 40px;
+
+    margin-right: 1em;
+  }
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+</style>
+<input type="text" /><br />
+<small></small>
+<div class="search">
+  <input type="search" />
+  <div class="results"></div>
+</div>
+<form action="createUser" method="post">
+  <input type="text" name="username" />
+  <input type="text" name="image" />
+  <input type="submit" value="createUser" />
+</form>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"
+  integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+<script>
+  document.querySelector("input").addEventListener("input", function () {
+    if (this.value.length > 0) {
+      axios.get(`/data/${this.value}`).then(function (response) {
+        if (response.data === null) {
+          document.querySelector("small").textContent = "username is available";
+          document.querySelector("small").style.color = "green";
+        } else {
+          document.querySelector("small").textContent =
+            "username already exists";
+          document.querySelector("small").style.color = "red";
+        }
+      });
+    } else {
+      document.querySelector("small").textContent = "";
+    }
+  });
+
+  var results = document.querySelector(".results");
+  document
+    .querySelector(".search input")
+    .addEventListener("input", function () {
+      if (this.value.length > 0) {
+        axios.get(`/search/${this.value}`).then(function (response) {
+          console.log(response);
+          var a = "";
+          response.data.forEach((element) => {
+            a += `<div class="shower">
+      <div class="img">
+        <img
+          src="${element.image}"
+          alt=""
+        />
+      </div>
+      <h5>${element.username}</h5>
+    </div>`;
+            results.innerHTML = a;
+          });
+        });
+      } else {
+        results.innerHTML = "";
+      }
+    });
+</script>
